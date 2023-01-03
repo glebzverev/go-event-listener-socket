@@ -27,7 +27,6 @@ var currentBlockNumber uint64
 func main() {
 	// createError()
 	fmt.Println("Listener is running")
-	ALCHEMY_KEY := "wss://eth-mainnet.g.alchemy.com/v2/dt-X9e68ahXP9Sl1bDn89XXHVT3vBohA"
 	client, err := ethclient.Dial(ALCHEMY_KEY)
 	if err != nil {
 		log.Fatal(err)
