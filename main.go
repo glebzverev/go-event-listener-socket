@@ -44,11 +44,15 @@ const ETH_USDT = "0x11b815efB8f581194ae79006d24E0d814B7697F6"
 const ETH_USDC = "0x88e6A0c2dDD26FEEb64F039a2c41296FcB3f5640"
 
 var currentBlockNumber uint64
+var startBlockNumber uint64
+var AFTER_RECONNECT bool
+
 var client *ethclient.Client
 var sub ethereum.Subscription
 var logs (chan types.Log)
 var err error
 
+func recovery(startBlock uint64, currentBlock uint64, client *ethclient.Client) {}
 func init() {
 
 }
@@ -72,7 +76,6 @@ Start:
 	logMintSigHash := crypto.Keccak256Hash(logMintSig)
 	logBurnSigHash := crypto.Keccak256Hash(logBurnSig)
 
-	logs = make(chan types.Log)
 Subscribe:
 	sub, err = createSubscription(client)
 	if err != nil {
@@ -88,10 +91,13 @@ Subscribe:
 		case logBurnSigHash.Hex():
 			prepareBurn(vLog.Data, vLog.BlockNumber, vLog.TxHash)
 		default:
-			sub.Unsubscribe()
-			close(logs)
+
 		}
-		currentBlockNumber = vLog.BlockNumber
+		if AFTER_RECONNECT {
+			currentBlockNumber = vLog.BlockNumber
+			AFTER_RECONNECT = false
+			recovery(startBlockNumber, currentBlockNumber, client)
+		}
 	}
 
 	for {
@@ -100,6 +106,8 @@ Subscribe:
 			if err != nil {
 				fmt.Errorf("Subscribe Error:\t", err)
 				fmt.Println("Try reconnect Subscription. Last block:\t", currentBlockNumber)
+				AFTER_RECONNECT = true
+				startBlockNumber = currentBlockNumber
 				time.Sleep(2 * time.Second)
 				goto Subscribe
 			}
