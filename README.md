@@ -25,4 +25,4 @@ go func() {
 
 ## Пример выводимых данных в консоли
 
-![alt text](https://github.com/glebzverev/go-event-listener-socket/blob/master/console_example.png?raw=true)
+![alt text](https://github.com/glebzverev/go-event-listener-socket/blob/master/docs/console_example.png)
