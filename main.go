@@ -15,7 +15,7 @@ import (
 	"github.com/joho/godotenv"
 )
 
-const time_in_seconds = 15
+const time_in_seconds = 600
 
 var (
 	ETH_USDT_Address = common.HexToAddress("0x11b815efB8f581194ae79006d24E0d814B7697F6")
@@ -68,7 +68,6 @@ func init() {
 }
 
 func main() {
-	fmt.Println(currentBlockNumber)
 Start:
 	// Create new ethclient.Client
 	client, err := ethclient.Dial(ALCHEMY_KEY)
@@ -78,7 +77,7 @@ Start:
 		time.Sleep(2 * time.Second)
 		goto Start
 	}
-	fmt.Println("Listener is running:\t", os.Getegid())
+	fmt.Println("Listener is running:\t", os.Getpid())
 
 Subscribe:
 	sub, err, logs = createSubscription(client)
